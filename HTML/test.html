@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Map:Circle geolocation Set:Event</title>
+    <style>html,body{height:100%;}body{padding:0;margin:0;}h1{padding:0;margin:0;font-size:50%;}</style>
+</head>
+<body>
+
+
+MAP[START]
+<h1>Map:Circle geolocation Set:Event</h1>
+<div id="myMap" style='width:100%;height:97%;float:left;'></div>
+<!-- MAP[END] -->
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<script src='https://www.bing.com/api/maps/mapcontrol?callback=GetMap&key=Apu5jHduIUJD40j3DOuamQFQoA1swDw2k1Zp9HWWoZvmx3iOc-3PrafeozE5ki3R' async defer></script>
+<script src="./js/BmapQuery.js"></script>
+<script>
+    //****************************************************************************************
+    // BingMaps&BmapQuery
+    //****************************************************************************************
+    //Init
+    function GetMap(){
+        //------------------------------------------------------------------------
+        //1. Instance
+        //------------------------------------------------------------------------
+        const map = new Bmap("#myMap");
+
+        //------------------------------------------------------------------------
+        //2. Display Map
+        //   startMap(lat, lon, "MapType", Zoom[1~20]);
+        //   MapType:[load, aerial,canvasDark,canvasLight,birdseye,grayscale,streetside]
+        //--------------------------------------------------
+        map.startMap(47.6149, -122.1941, "load", 13);
+
+        //------------------------------------------------------------------------
+        //3.Circle Add: Event
+        //  circle(int Meter, object style, "event", callback );
+        //------------------------------------------------------------------------
+        //Style Setting
+        const style = {
+            pinColor:"#0000ff",
+            fillColor:"rgba(0,0,100,0.4)",
+            strokeWidth:10
+        };
+        // Click:Event
+        map.circle(3000, style, "click", function(){ //3000=3Km
+            const lat = map.getCenter().latitude;    //Get MapCenter Latitude
+            const lon = map.getCenter().longitude;   //Get MapCenter Longitude
+            map.infobox(lat, lon, "Title", "Description");
+        });
+
+    }
+</script>
+<!-- javascript -->
+<script>
+    //1．位置情報の取得に成功した時の処理
+    function mapsInit(position) {
+        //lat=緯度、lon=経度 を取得
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+        console.log(`緯度:${lat} 経度:${lon}`);
+        console.log(position.coords);
+        map.startMap(lat, lon, "load", 12);
+        let pin = map.pin(lat, lon, "#ff0000");
+        
+    };
+    
+    //2． 位置情報の取得に失敗した場合の処理
+    function mapsError(error) {
+      let e = "";
+      if (error.code == 1) { //1＝位置情報取得が許可されてない（ブラウザの設定）
+        e = "位置情報が許可されてません";
+      }
+      if (error.code == 2) { //2＝現在地を特定できない
+        e = "現在位置を特定できません";
+      }
+      if (error.code == 3) { //3＝位置情報を取得する前にタイムアウトになった場合
+        e = "位置情報を取得する前にタイムアウトになりました";
+      }
+      alert("エラー：" + e);
+    };
+    
+    //3.位置情報取得オプション
+    var set ={
+      enableHighAccuracy: true, //より高精度な位置を求める
+      maximumAge: 20000,        //最後の現在地情報取得が20秒以内であればその情報を再利用する設定
+      timeout: 10000            //10秒以内に現在地情報を取得できなければ、処理を終了
+    };
+    
+    
+    
+    </script>
+    
+</body>
+</html>
